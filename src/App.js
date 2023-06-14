@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
@@ -9,16 +8,16 @@ function App() {
   const [paisSeleccionado, setPaisSeleccionado] = useState(null);
   const [puntaje, setPuntaje] = useState(0);
   const [timer, setTimer] = useState(15);
-  const [jugador, setJugador] = useState("");
   const [letrasAyuda, setLetrasAyuda] = useState(0);
   
-  
-
   useEffect(() => {
-    
-    axios.get('https://countriesnow.space/api/v0.1/countries/flag/images')
+    axios
+      .get("https://countriesnow.space/api/v0.1/countries/flag/images")
       .then((response) => {
-        setPaises(response.data);
+        setPaises(response.data.data);
+      })
+      .catch((error) => {
+        console.log(error);
       });
   }, []);
 
@@ -37,7 +36,7 @@ function App() {
 
     if (timer === 0) {
       clearInterval(regresiva);
-      setPuntaje((puntajeAnt) => puntajeAnt + timer);
+      setTimer((puntajeAnt) => puntajeAnt + timer);
     }
 
     return () => {
@@ -45,18 +44,21 @@ function App() {
     };
   }, [timer]);
 
-  const handleGuess = (event) => {
+  const respuesta = (event) => {
     event.preventDefault();
-    const paisAdivinado = event.target.elements.guess.value;
-    if (paisAdivinado.toLowerCase() === paisSeleccionado.paises.toLowerCase()) {
-      setPuntaje((puntajeAnt) => puntajeAnt + 10);
-      event.target.reset();
-    } else {
-      setPuntaje((puntajeAnt) => puntajeAnt - 1);
+    const paisAdivinado = event.target.elements.guess.value.trim().toLowerCase();
+    console.log(paisAdivinado);
+    if (paisSeleccionado && paisSeleccionado.country) {
+      const nombrePaisSeleccionado = paisSeleccionado.country.toLowerCase();
+      if (paisAdivinado === nombrePaisSeleccionado) {
+        setPuntaje(puntajeAnt => puntajeAnt + 10); 
+      } else {
+        setPuntaje(puntajeAnt => puntajeAnt - 1); 
+      }
     }
   };
 
-  const handleHelp = () => {
+  const ayuda = () => {
     if (letrasAyuda < paisSeleccionado.paises.length - 1) {
       setLetrasAyuda((LetrasAnt) => LetrasAnt + 1);
     }
@@ -64,18 +66,17 @@ function App() {
 
   return (
     <div>
-      <h1>Flag Guessing Game</h1>
       {paisSeleccionado && (
         <div>
-          <img src={paisSeleccionado.flag} alt="Country Flag" />
-          <form onSubmit={handleGuess}>
-            <input type="text" name="guess" placeholder="Enter country name" />
-            <button type="submit">Guess</button>
+          <img src={paisSeleccionado.flag} alt="Country Flag"/>
+          <form onSubmit={respuesta}>
+            <input type="text" name="guess" placeholder="Ingresá país" />
+            <button type="submit">Confirmar</button>
           </form>
-          <p>Score: {puntaje}</p>
+          <p>Puntaje: {puntaje}</p>
           <p>Timer: {timer}s</p>
-          <button onClick={handleHelp}>Help</button>
-          <p>Help Letters: {letrasAyuda}</p>
+          <button onClick={ayuda}>Ayuda</button>
+          <p>Ayudas utilizadas: {letrasAyuda}</p>
         </div>
       )}
     </div>
