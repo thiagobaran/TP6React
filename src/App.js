@@ -51,10 +51,14 @@ function App() {
       const nombrePaisSeleccionado = paisSeleccionado.name.toLowerCase();
       if (paisAdivinado === nombrePaisSeleccionado) {
         setPuntaje(puntajeAnt => puntajeAnt + 10 + timer);
+        const random = Math.floor(Math.random() * paises.length);
+        setPaisSeleccionado(paises[random]);
+        setTimer(15);
       } else {
         setPuntaje(puntajeAnt => puntajeAnt - 1);
       }
     }
+    event.target.elements.guess.value='';
   };
   const nuevaBandera = (timer) =>{
     const random = Math.floor(Math.random() * paises.length);
