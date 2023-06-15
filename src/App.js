@@ -8,8 +8,8 @@ function App() {
   const [paisSeleccionado, setPaisSeleccionado] = useState(null);
   const [puntaje, setPuntaje] = useState(0);
   const [timer, setTimer] = useState(15);
-  const [letrasAyuda, setLetrasAyuda] = useState(0);
-  
+  const random = Math.floor(Math.random() * paises.length);
+
   useEffect(() => {
     axios
       .get("https://countriesnow.space/api/v0.1/countries/flag/images")
@@ -23,7 +23,6 @@ function App() {
 
   useEffect(() => {
     if (paises.length > 0) {
-      const random = Math.floor(Math.random() * paises.length);
       setPaisSeleccionado(paises[random]);
       setTimer(15);
     }
@@ -48,35 +47,36 @@ function App() {
     event.preventDefault();
     const paisAdivinado = event.target.elements.guess.value.trim().toLowerCase();
     console.log(paisAdivinado);
-    if (paisSeleccionado && paisSeleccionado.country) {
-      const nombrePaisSeleccionado = paisSeleccionado.country.toLowerCase();
+    if (paisSeleccionado && paisSeleccionado.name) {
+      const nombrePaisSeleccionado = paisSeleccionado.name.toLowerCase();
       if (paisAdivinado === nombrePaisSeleccionado) {
-        setPuntaje(puntajeAnt => puntajeAnt + 10); 
+        setPuntaje(puntajeAnt => puntajeAnt + 10 + timer);
       } else {
-        setPuntaje(puntajeAnt => puntajeAnt - 1); 
+        setPuntaje(puntajeAnt => puntajeAnt - 1);
       }
     }
   };
-
-  const ayuda = () => {
-    if (letrasAyuda < paisSeleccionado.paises.length - 1) {
-      setLetrasAyuda((LetrasAnt) => LetrasAnt + 1);
-    }
-  };
+  const nuevaBandera = (timer) =>{
+    const random = Math.floor(Math.random() * paises.length);
+    setPaisSeleccionado(paises[random]);
+    setTimer(15);
+  }
 
   return (
     <div>
       {paisSeleccionado && (
         <div>
-          <img src={paisSeleccionado.flag} alt="Country Flag"/>
-          <form onSubmit={respuesta}>
+          <img class="imagenes" src={paisSeleccionado.flag} alt=""/>
+          <form class="formulario" onSubmit={respuesta}>
             <input type="text" name="guess" placeholder="Ingresá país" />
-            <button type="submit">Confirmar</button>
+            <button class="botones" type="submit">Confirmar</button>
           </form>
+          <button class="botonSiguiente" onClick={nuevaBandera} type="submit">Siguiente</button>
+          <div className="score-timer"> 
           <p>Puntaje: {puntaje}</p>
           <p>Timer: {timer}s</p>
-          <button onClick={ayuda}>Ayuda</button>
-          <p>Ayudas utilizadas: {letrasAyuda}</p>
+          </div>
+          
         </div>
       )}
     </div>
