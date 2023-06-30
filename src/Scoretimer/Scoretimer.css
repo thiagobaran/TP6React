@@ -1,0 +1,14 @@
+.container p {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+.score-timer {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    color: rgb(194, 193, 193);
+    font-weight: bold;
+    font-family:Arial, Helvetica, sans-serif;
+    font-size: 18px;
+  }
